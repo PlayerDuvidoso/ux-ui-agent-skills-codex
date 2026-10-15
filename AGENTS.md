@@ -8,11 +8,10 @@ This file is the whole brief. It is written to the `AGENTS.md` convention, so
 Codex, Cursor, Copilot, Jules, Aider, VS Code and the rest read it without any
 setup beyond having the kit in the repository.
 
-> **Claude Code users: read `CLAUDE.md` instead.** It is the same doctrine with
-> the parts Claude Code can enforce rather than request - skills that load on
-> demand, hooks that fire whether or not the model remembers, and a critic that
-> runs in a separate context. Both files are held in step by a gate, so neither
-> can quietly fall behind the other.
+> **Claude Code users: read `CLAUDE.md` instead.** Codex users can install
+> namespaced skills and lifecycle hooks using `python3 codex/install.py`.
+> See [Codex setup](codex/README.md); hooks require explicit trust in `/hooks`.
+> Other agents can use this instruction file and run the gates manually.
 
 ---
 
@@ -213,13 +212,10 @@ Depth: `taste/design-taste.md`, and 138 named systems in
 
 ## What this file cannot do
 
-Said plainly, because the alternative is implying otherwise.
-
-Claude Code enforces three of these rules with hooks that run whether or not the
-model remembers them: no hardcoded values and no emoji on every file write, and a
-refusal to end a session that edited UI and measured none of it. There is no
-equivalent here. On this surface every rule above is a request, and the gates run
-when you run them.
-
-That makes step 4 the whole difference between this kit working and not working.
-Run the gate. Report what it printed.
+This instruction file alone cannot enforce checks. This fork optionally adds
+Codex lifecycle hooks: `python3 codex/install.py`, then review/trust them in
+`/hooks`. See [Codex setup](codex/README.md) for installation and limitations.
+Trusted hooks detect UI changes, run static checks and request continuation when
+current file hashes have no successful verification receipt. The verification
+command must actually cover the targets; a build is not visual certification.
+Other agents still need to run the gates themselves. Hooks never prove taste.

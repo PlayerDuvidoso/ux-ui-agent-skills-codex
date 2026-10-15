@@ -1,3 +1,5 @@
+> **Codex fork update:** The instructions below describe the upstream AGENTS-only installation. This fork also provides 25 Codex skills and four lifecycle hooks. Follow [Codex installation](../codex/README.md) to enable them; trust review is required. Other agents remain instruction-only.
+
 # Using the kit without Claude Code
 
 Codex, Cursor, Copilot, Jules, Aider, VS Code and about twenty more coding agents
@@ -33,9 +35,9 @@ only the Claude Code one.
 
 On Claude Code three rules are enforced without the model choosing to: no
 hardcoded values and no emoji on every file write, and a refusal to end a session
-that edited UI and measured none of it. There is no equivalent on this surface.
+that edited UI and measured none of it. The upstream AGENTS-only install does not include that enforcement. The Codex adapter in this fork adds it after installation and trust review.
 
-Every rule here is a request. The gates run when you run them. That makes "run
+Without the optional Codex adapter, every rule here is a request. The gates run when you run them. That makes "run
 the gate and report what it printed" the whole difference between the kit working
 and not working — which is why `AGENTS.md` says it six times.
 
@@ -98,4 +100,4 @@ both house rules correctly, explained why it should not run the self-test, and �
 the part that matters — reported a gate's `SKIPPED: ... This measured NOTHING -
 not a pass` verbatim instead of calling it a pass.
 
-That last one is the doctrine working on a surface with no hooks to enforce it.
+That historical result exercised the upstream installation without the optional Codex hooks.

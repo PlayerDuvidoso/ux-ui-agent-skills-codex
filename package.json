@@ -35,7 +35,8 @@
     "docs:shots": "node scripts/screenshot_docs.mjs",
     "docs:shots:check": "node scripts/screenshot_docs.mjs --check",
     "mcp": "node mcp/server.mjs",
-    "test:mcp": "node mcp/server.mjs --selftest"
+    "test:mcp": "node mcp/server.mjs --selftest",
+    "test:codex": "python3 -m unittest discover -s codex -p 'test_*.py' -v"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",
@@ -69,7 +70,8 @@
     ".claude/agents/",
     "!**/__pycache__/**",
     "!**/*.pyc",
-    "!**/.DS_Store"
+    "!**/.DS_Store",
+    "codex/"
   ],
   "keywords": [
     "design-system",

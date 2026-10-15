@@ -1,3 +1,5 @@
+> **Codex fork:** This repository adds portable Codex installation, 25 namespaced skills, and lifecycle hooks for automatic UI checks and verification receipts. See [Codex setup / 설치 안내](codex/README.md). Original kit: [plugin87/ux-ui-agent-skills](https://github.com/plugin87/ux-ui-agent-skills).
+
 <div align="center">
 
 # UX/UI Agent Skills

@@ -20,8 +20,9 @@
 import { execSync } from 'node:child_process';
 import { readdirSync, statSync, existsSync } from 'node:fs';
 import { resolve, dirname, join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const BRIEFS = join(ROOT, 'evals', 'briefs');
 const argv = process.argv.slice(2);
 const flag = (n) => {
