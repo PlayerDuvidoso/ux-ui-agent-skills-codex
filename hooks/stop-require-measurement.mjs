@@ -48,7 +48,11 @@ if (!edited.length) process.exit(0);
 const unmeasured = edited.filter(p => liveReceiptsFor(p).length === 0);
 if (!unmeasured.length) process.exit(0);
 
-const browser = existsSync('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
+const browser = process.env.DS_BROWSER_EXECUTABLE_PATH
+  ? existsSync(process.env.DS_BROWSER_EXECUTABLE_PATH)
+  : existsSync('/opt/google/chrome/chrome')
+  || (process.env.PLAYWRIGHT_BROWSERS_PATH && existsSync(process.env.PLAYWRIGHT_BROWSERS_PATH))
+  || existsSync('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
   || existsSync(join(process.env.HOME || '', 'Library/Caches/ms-playwright'))
   || existsSync(join(process.env.HOME || '', '.cache/ms-playwright'));
 
@@ -59,7 +63,7 @@ if (!browser) {
     `[ux-ui-agent-skills] ${unmeasured.length} file(s) were edited and cannot be measured `
     + `here - this machine has no browser for the render gates:\n${list}\n\n`
     + `Not a blocker, but your answer must say the result is UNMEASURED rather than `
-    + `implying it passed. Installing one: npx playwright install chrome`);
+    + `implying it passed. Installing one: npx playwright install chromium`);
   process.exit(0);
 }
 

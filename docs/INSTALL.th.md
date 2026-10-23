@@ -1,3 +1,5 @@
+> Codex Cloud: [setup without administrator access and cross-project reuse](CODEX-CLOUD.md). All browser gates support user-installed Chrome/Chromium and Playwright’s user cache.
+
 # ใช้ ux-ui-agent-skills ยังไง — ฉบับภาษาไทย
 
 เล่าสั้นๆ ว่ามันคืออะไร เข้าได้กี่ทาง และทางไหนเหมาะกับคุณ
@@ -158,7 +160,7 @@ npx ux-ui-agent-skills list        # ดูว่ามีอะไรให้�
 เครื่องมือตรวจที่ต้องเปิดหน้าเว็บจริง ต้องลงเบราว์เซอร์ก่อน **ครั้งเดียวต่อเครื่อง**
 
 ```bash
-npm install && npx playwright install chrome
+npm install && npx playwright install chromium
 ```
 
 ถ้าไม่ลง มันจะพิมพ์ `SKIPPED` แล้วจบด้วยรหัส 0

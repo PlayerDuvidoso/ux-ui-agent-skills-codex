@@ -1,3 +1,5 @@
+> **Codex Cloud compatible:** Browser gates support user-installed Chrome/Chromium and Playwright’s user cache without administrator access. See [Cloud setup and reuse across projects](docs/CODEX-CLOUD.md).
+
 > **Codex fork:** This repository adds portable Codex installation, 25 namespaced skills, and lifecycle hooks for automatic UI checks and verification receipts. See [Codex setup / 설치 안내](codex/README.md). Original kit: [plugin87/ux-ui-agent-skills](https://github.com/plugin87/ux-ui-agent-skills).
 
 <div align="center">
@@ -363,8 +365,8 @@ pulled in by `/plugin install` or `npx ux-ui-agent-skills init`, so run this onc
 in the kit directory before expecting a full score:
 
 ```bash
-npm install                          # playwright
-npx playwright install chrome        # real Chrome: six gates require the channel
+npm ci                               # locked development dependencies
+npx playwright install chromium       # user cache; no administrator access
 ```
 
 Without it those 34 report `REQUIRED, FAILING` under `accuracy_report.mjs`, which

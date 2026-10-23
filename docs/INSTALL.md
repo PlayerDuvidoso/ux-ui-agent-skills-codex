@@ -1,3 +1,5 @@
+> Codex Cloud: [setup without administrator access and cross-project reuse](CODEX-CLOUD.md). All browser gates support user-installed Chrome/Chromium and Playwright’s user cache.
+
 # Five ways in, and which one is yours
 
 `ux-ui-agent-skills` reaches an agent through five channels. They install
@@ -191,7 +193,7 @@ node scripts/verify_screen_economy.mjs <your page>
 **The render gates need a browser, once per machine:**
 
 ```bash
-npm install && npx playwright install chrome
+npm install && npx playwright install chromium
 ```
 
 Without it a render gate prints `SKIPPED` and exits 0. That is not a pass — it

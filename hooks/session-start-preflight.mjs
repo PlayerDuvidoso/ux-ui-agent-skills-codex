@@ -27,11 +27,13 @@ function playwrightPresent() {
 
 /** A browser Playwright can actually drive, without launching one. */
 function browserPresent() {
+  if (process.env.DS_BROWSER_EXECUTABLE_PATH) return existsSync(process.env.DS_BROWSER_EXECUTABLE_PATH);
+  if (existsSync('/opt/google/chrome/chrome')) return true;
   const home = process.env.HOME || '';
   const macChrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
   if (existsSync(macChrome)) return true;
-  const caches = [join(home, 'Library/Caches/ms-playwright'), join(home, '.cache/ms-playwright')];
-  return caches.some(c => existsSync(c));
+  const caches = [process.env.PLAYWRIGHT_BROWSERS_PATH, join(home, 'Library/Caches/ms-playwright'), join(home, '.cache/ms-playwright')];
+  return caches.some(c => c && existsSync(c));
 }
 
 const pw = playwrightPresent();
@@ -44,7 +46,7 @@ if (pw && br) {
   lines.push('  result is recorded, and quote the output rather than remembering it.');
 } else {
   lines.push(`  Render gates CANNOT run here (playwright: ${pw ? 'yes' : 'no'}, browser: ${br ? 'yes' : 'no'}).`);
-  lines.push('  Fix: npm install && npx playwright install chrome');
+  lines.push('  Fix: npm install && npx playwright install chromium');
   lines.push('  Until then, every contrast, state, axe, target-size, overflow and');
   lines.push('  responsive claim is UNMEASURED. Say so in your answer. A render gate');
   lines.push('  with no browser prints SKIPPED and exits 0 - that is not a pass.');

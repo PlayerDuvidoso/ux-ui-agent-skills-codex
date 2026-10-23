@@ -10,6 +10,17 @@ with auto-generated notes instead.
 
 ---
 
+### Unreleased
+
+- Codex Cloud: all browser gates, screenshots and test preflight share a browser
+  launcher supporting explicit user executables, system Chrome, and Playwright
+  Chromium in a user cache. Administrator access is no longer required.
+- Required render and axe checks fail when the browser or accessibility engine
+  cannot load, instead of reporting a successful skipped run.
+- Document cloud setup, browser selection and reuse from other Codex projects.
+- Native slider state contrast measures its explicit accent color rather than
+  inherited text color; contrasting and low-contrast fixtures cover both verdicts.
+
 ### `v2.9.8`
 
 **The Stop hook can no longer block you over another project's files, even if
