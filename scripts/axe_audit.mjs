@@ -12,6 +12,7 @@
  * node_modules if present, else from a pinned CDN build (Chrome has network).
  */
 import { launchBrowser } from './_browser.mjs';
+import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { requireTargets } from './_targets.mjs';
@@ -45,9 +46,12 @@ if (dark) {
   await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
 }
 
-const localAxe = resolve('node_modules/axe-core/axe.min.js');
+// The kit's own copy first (a plugin runs with the user's project as cwd), then
+// the cwd's, then the CDN.
+const localAxe = [fileURLToPath(new URL('../node_modules/axe-core/axe.min.js', import.meta.url)),
+                  resolve('node_modules/axe-core/axe.min.js')].find(p => existsSync(p));
 try {
-  if (existsSync(localAxe)) await page.addScriptTag({ path: localAxe });
+  if (localAxe) await page.addScriptTag({ path: localAxe });
   else await page.addScriptTag({ url: 'https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.2/axe.min.js' });
 } catch {
   const required = process.env.DS_REQUIRE_BROWSER === '1';
