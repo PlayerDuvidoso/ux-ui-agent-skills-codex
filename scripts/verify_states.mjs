@@ -9,7 +9,9 @@
  * Exit 1 if any state of any element drops below WCAG AA.
  */
 import { launchBrowser } from './_browser.mjs';
+import { installRenderedColor } from './_rendered-color.mjs';
 import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { requireTargets } from './_targets.mjs';
 let chromium;
 try { ({ chromium } = await import('playwright')); }
@@ -30,17 +32,15 @@ if (!file) { console.log('usage: node scripts/verify_states.mjs <file.html> [--d
 function lin(c) { c /= 255; return c <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4; }
 function L([r, g, b]) { return .2126 * lin(r) + .7152 * lin(g) + .0722 * lin(b); }
 function ratio(a, b) { const l1 = L(a), l2 = L(b), hi = Math.max(l1, l2), lo = Math.min(l1, l2); return (hi + .05) / (lo + .05); }
-const parse = s => { const m = s && s.match(/[\d.]+/g); return m ? m.slice(0, 3).map(Number) : null; };
 
 const browser = await launchBrowser(chromium);
 const page = await browser.newPage({ viewport: { width: 1000, height: 800 } });
-await page.goto('file://' + resolve(file), { waitUntil: 'networkidle' }).catch(() => {});
+await page.addInitScript(installRenderedColor);
+await page.goto(pathToFileURL(resolve(file)).href, { waitUntil: 'networkidle' });
 await page.addStyleTag({ content: '*{transition:none!important;animation:none!important}' });
 if (dark) await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
 
 const read = el => {
-  const transparent = c => { const a = c.match(/[\d.]+/g); return !c || c === 'rgba(0, 0, 0, 0)' || (a && a.length === 4 && parseFloat(a[3]) === 0); };
-  const eff = n => { while (n) { const c = getComputedStyle(n).backgroundColor; if (!transparent(c)) return c; n = n.parentElement; } return getComputedStyle(document.body).backgroundColor; };
   const cs = getComputedStyle(el);
   // skip non-text form controls (checkbox/radio/switch render natively via accent-color,
   // not CSS text color) and invisible elements — measuring their color/bg is meaningless.
@@ -48,14 +48,14 @@ const read = el => {
   // WCAG 1.4.3 / 1.4.11 exempt disabled (inactive) controls from contrast.
   const isDisabled = el.disabled || el.getAttribute('aria-disabled') === 'true';
   const skip = isToggle || el.getAttribute('role') === 'switch' || +cs.opacity === 0 || isDisabled;
-  const own = transparent(cs.backgroundColor) ? eff(el.parentElement) : cs.backgroundColor;
+  const own = globalThis.__uxBackground(el);
   // graphical / icon-only control: no DIRECT text node (only an <svg> or nothing) →
   // WCAG 1.4.11 non-text contrast applies (3:1), not the 4.5 text rule.
   const graphical = ![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
   // Native range controls paint their thumb with accent-color, not the inherited
   // text color. Preserve the non-text 3:1 assertion against the control surface.
   const rangeAccent = el.tagName === 'INPUT' && el.type === 'range' && cs.accentColor !== 'auto';
-  return { skip, graphical, color: rangeAccent ? cs.accentColor : cs.color, bg: own, label: (el.textContent || el.value || el.getAttribute('aria-label') || '').trim().slice(0, 18), px: parseFloat(cs.fontSize), bold: (parseInt(cs.fontWeight, 10) || 400) >= 700 };
+  return { skip, graphical, color: globalThis.__uxComposite(globalThis.__uxRGBA(rangeAccent ? cs.accentColor : cs.color), own), bg: own, label: (el.textContent || el.value || el.getAttribute('aria-label') || '').trim().slice(0, 18), px: parseFloat(cs.fontSize), bold: (parseInt(cs.fontWeight, 10) || 400) >= 700 };
 };
 
 const handles = await page.$$('button, a[href], input, select, textarea, [role="button"], [role="switch"]');
@@ -70,7 +70,7 @@ for (const h of handles) {
       await page.mouse.move(0, 0);
       if (state === 'focus') await h.evaluate(el => el.blur && el.blur());
       if (r.skip) break;  // non-text control (checkbox/radio/switch) or invisible — not a text-contrast target
-      const fg = parse(r.color), bg = parse(r.bg);
+      const fg = r.color, bg = r.bg;
       if (!fg || !bg) continue;
       checked++;
       const need = r.graphical ? 3.0 : ((r.px >= 24 || (r.px >= 18.66 && r.bold)) ? 3.0 : 4.5);

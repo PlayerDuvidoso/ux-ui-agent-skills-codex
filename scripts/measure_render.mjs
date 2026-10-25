@@ -14,8 +14,10 @@
  * Exit 1 only when a real rendered text pair is below WCAG 2.2 AA.
  */
 import { launchBrowser } from './_browser.mjs';
+import { installRenderedColor } from './_rendered-color.mjs';
 import { readdirSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { requireTargets } from './_targets.mjs';
 
 let chromium;
@@ -57,19 +59,14 @@ catch (error) {
 let totalFail = 0;
 for (const f of files) {
   const page = await browser.newPage();
-  await page.goto('file://' + resolve(f));
+  await page.addInitScript(installRenderedColor);
+  await page.goto(pathToFileURL(resolve(f)).href);
   await page.addStyleTag({ content: '*{transition:none!important;animation:none!important}' });
   if (dark) await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
 
   const items = await page.evaluate(() => {
-    const toRGBA = s => { const m = s && s.match(/[\d.]+/g); return m ? [+m[0], +m[1], +m[2], m[3] !== undefined ? +m[3] : 1] : null; };
-    function bgOf(el) {
-      const stack = []; let n = el;
-      while (n) { const c = toRGBA(getComputedStyle(n).backgroundColor); if (c && c[3] > 0) { stack.push(c); if (c[3] >= 1) break; } n = n.parentElement; }
-      let base = [255, 255, 255];
-      for (let i = stack.length - 1; i >= 0; i--) { const [r, g, b, a] = stack[i]; base = [r * a + base[0] * (1 - a), g * a + base[1] * (1 - a), b * a + base[2] * (1 - a)]; }
-      return base;
-    }
+    const toRGBA = globalThis.__uxRGBA;
+    const bgOf = globalThis.__uxBackground;
     const out = [];
     for (const el of document.querySelectorAll('body *')) {
       if (['SCRIPT', 'STYLE', 'SVG', 'PATH', 'USE'].includes(el.tagName)) continue;
@@ -81,7 +78,7 @@ for (const f of files) {
       const col = toRGBA(cs.color); if (!col) continue;
       const px = parseFloat(cs.fontSize), bold = parseInt(cs.fontWeight, 10) >= 700;
       out.push({ tag: el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).split(' ')[0] : ''),
-        text: el.textContent.trim().slice(0, 24), color: [col[0], col[1], col[2]], bg: bgOf(el), px, bold });
+        text: el.textContent.trim().slice(0, 24), color: globalThis.__uxComposite(col, bgOf(el)), bg: bgOf(el), px, bold });
     }
     return out;
   });
