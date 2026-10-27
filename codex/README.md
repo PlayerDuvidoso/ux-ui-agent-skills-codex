@@ -19,7 +19,7 @@ python3 codex/install.py
 
 설치 도구는 `CODEX_HOME` 또는 기본 `~/.codex`에 다음을 추가합니다.
 
-- `ux-ui-` 접두사를 붙인 스킬 25개
+- `ux-ui-` 접두사를 붙인 스킬 26개
 - 기존 설정을 보존한 `hooks.json`의 훅 4개
 - 설치 목록과 업데이트 전 백업
 

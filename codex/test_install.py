@@ -32,7 +32,7 @@ class Install(unittest.TestCase):
             self.assertEqual(len(config['hooks']['Stop']), 2)
             self.assertEqual(len(config['hooks']['PreToolUse']), 1)
         skills = list((self.home / 'skills').glob('ux-ui-*/SKILL.md'))
-        self.assertEqual(len(skills), 25)
+        self.assertEqual(len(skills), 26)
         self.assertEqual((unrelated / 'SKILL.md').read_text(), 'user skill')
         for file in skills:
             content = file.read_text()
